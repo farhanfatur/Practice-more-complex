@@ -1,7 +1,7 @@
 var homeView = Backbone.View.extend({
-    render: function() {
+    render: function(dataJson) {
         var markup = '<div class="container-home table-custom">'+
-        '<p class="txt-len">Total : <span id="totalLen"></span></p>'+
+        '<p id="txt-len">Total : <span id="totalLen"></span></p>'+
         // Queue & Stack(Redis)
         '<button class="btn btn-success" style="margin-bottom: 2px"  id="push">Push</button>'+
         '<button class="btn btn-primary" style="margin-bottom: 2px;margin-left: 2px;" id="len">Len</button>'+
@@ -21,7 +21,7 @@ var homeView = Backbone.View.extend({
         '</div>'+
         '</div>'
 
-        
+        // var jsonParse = JSON.parse(dataJson)
         this.$el.html(markup)
         showData("redis")
         return this
@@ -37,13 +37,17 @@ var homeView = Backbone.View.extend({
     },
     showLen: function() {
         $.ajax({
-            url: "api/lens",
+            url: "/api/lens",
             type: "POST",
             contentType: "application/json",
             dataType: "json",
             success: function(v, i) {
-                $(".txt-len").show()
+                console.log(v, i)
+                $("#txt-len").show()
                 $("#totalLen").text(v)
+            },
+            error: function(v, i) {
+                console.log(v, i)
             }
         })
     },

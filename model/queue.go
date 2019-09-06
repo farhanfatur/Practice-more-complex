@@ -171,6 +171,7 @@ func (q *QueueMongo) Len() int {
 	defer conn.Close()
 	FuncName <- "Len"
 	Val <- num
+	fmt.Println(num)
 	return num
 }
 

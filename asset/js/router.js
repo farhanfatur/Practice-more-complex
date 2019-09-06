@@ -15,7 +15,9 @@ var appRouter = Backbone.Router.extend({
 
     },
     index: function() {
-        $("#content").html(view.HomeView.render().el)
+        var dataJson = keyModels.attributes
+        console.log(JSON.parse(dataJson))
+        $("#content").html(view.HomeView.render(dataJson).el)
     }
     // viewPush: function() {
     //     $("#content").html(this.PushView.render().el)

@@ -7,7 +7,7 @@ function showData(opt) {
             success: function (v) {
                 var $tbody = $("tbody");
                 $tbody.empty()
-                $(".txt-len").hide()
+                $("#txt-len").hide()
                 $.each(v, function(index, val) {
                     var $tr = $("<tr></tr>")
                     $tr.appendTo($tbody)
@@ -30,7 +30,7 @@ function showData(opt) {
             success: function (v) {
                 var $tbody = $("tbody");
                 $tbody.empty()
-                $(".txt-len").hide()
+                $("#txt-len").hide()
                 $.each(v, function(index, val) {
                     var $tr = $("<tr></tr>")
                     $tr.appendTo($tbody)
