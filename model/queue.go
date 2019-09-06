@@ -8,9 +8,10 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"gopkg.in/mgo.v2"
+	. "TheLast/model/backgroundservice"
 
 	"github.com/gomodule/redigo/redis"
+	"gopkg.in/mgo.v2"
 )
 
 type QueueRedis struct {
@@ -22,6 +23,8 @@ func (c *QueueRedis) Push(key interface{}) bool {
 	redis.Strings(con.Do("RPUSH", "list", key))
 	fmt.Println(runtime.NumGoroutine())
 	defer con.Close()
+	FuncName <- "Push"
+	Val <- true
 	return true
 }
 
@@ -42,8 +45,9 @@ func (c *QueueRedis) Pop() interface{} {
 	if _, err2 := con.Do("LPOP", "list"); err2 != nil {
 		panic(err2)
 	}
-	fmt.Println(runtime.NumGoroutine())
 	defer con.Close()
+	FuncName <- "Pop"
+	Val <- index
 	return index
 }
 
@@ -60,8 +64,9 @@ func (c *QueueRedis) Keys() []interface{} {
 	for _, each := range result {
 		resultParse = append(resultParse, each)
 	}
-	fmt.Println(runtime.NumGoroutine())
 	defer con.Close()
+	FuncName <- "Keys"
+	Val <- resultParse
 	return resultParse
 
 }
@@ -73,8 +78,9 @@ func (c *QueueRedis) Len() int {
 	if count <= 0 {
 		fmt.Println("Data is empty")
 	}
-	fmt.Println(runtime.NumGoroutine())
 	defer con.Close()
+	FuncName <- "Len"
+	Val <- count
 	return count
 }
 
@@ -100,8 +106,9 @@ func (c *QueueRedis) Contains(key interface{}) bool {
 			}
 		}
 	}
-	fmt.Println(runtime.NumGoroutine())
 	defer con.Close()
+	FuncName <- "Contains"
+	Val <- exist
 	return exist
 }
 
@@ -129,6 +136,8 @@ func (q *QueueMongo) Push(key interface{}) bool {
 		log.Fatal(err.Error())
 	}
 	defer conn.Close()
+	FuncName <- "Push"
+	Val <- true
 	return true
 }
 
@@ -146,6 +155,8 @@ func (q *QueueMongo) Keys() []interface{} {
 		viewAll = append(viewAll, val.Number)
 	}
 	defer conn.Close()
+	FuncName <- "Keys"
+	Val <- viewAll
 	return viewAll
 }
 
@@ -158,6 +169,8 @@ func (q *QueueMongo) Len() int {
 		panic(err.Error())
 	}
 	defer conn.Close()
+	FuncName <- "Len"
+	Val <- num
 	return num
 }
 
@@ -174,6 +187,8 @@ func (q *QueueMongo) Pop() interface{} {
 		panic(err.Error())
 	}
 	defer conn.Close()
+	FuncName <- "Pop"
+	Val <- model.Number
 	return model.Number
 }
 
@@ -192,7 +207,6 @@ func (q *QueueMongo) Contains(key interface{}) bool {
 		dataSlice = append(dataSlice, val.Number)
 	}
 	if len(dataSlice) == 1 {
-		fmt.Println("First")
 		exist = true
 	} else {
 		for _, g := range dataSlice[:len(dataSlice)-1] {
@@ -208,5 +222,7 @@ func (q *QueueMongo) Contains(key interface{}) bool {
 		}
 	}
 	defer conn.Close()
+	FuncName <- "Contains"
+	Val <- exist
 	return exist
 }

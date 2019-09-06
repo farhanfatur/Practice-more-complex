@@ -2,14 +2,14 @@ package controller
 
 import (
 	"TheLast/model"
+	"TheLast/service"
 	"encoding/json"
 	"log"
 	"net/http"
 )
 
-var redisDo = model.Register("redis", "stack")
-
 type QueueController struct {
+	RedisDo service.ServiceAction
 }
 
 func (l *QueueController) Push(w http.ResponseWriter, r *http.Request) {
@@ -19,8 +19,8 @@ func (l *QueueController) Push(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	redisDo.Push(pushModel.Number)
-	redisDo.Contains(pushModel.Number)
+	l.RedisDo.Push(pushModel.Number)
+	l.RedisDo.Contains(pushModel.Number)
 	w.Header().Set("content-type", "application/json")
 	var response = map[string]interface{}{
 		"alert": "success",
@@ -34,7 +34,7 @@ func (l *QueueController) Push(w http.ResponseWriter, r *http.Request) {
 
 func (l *QueueController) Keys(w http.ResponseWriter, r *http.Request) {
 
-	var jsonInByte, err = json.Marshal(redisDo.Keys())
+	var jsonInByte, err = json.Marshal(l.RedisDo.Keys())
 	if err != nil {
 		panic(err.Error())
 	}
@@ -43,7 +43,7 @@ func (l *QueueController) Keys(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *QueueController) Lens(w http.ResponseWriter, r *http.Request) {
-	var jsonInByte, err = json.Marshal(redisDo.Len())
+	var jsonInByte, err = json.Marshal(l.RedisDo.Len())
 	if err != nil {
 		panic(err.Error())
 	}
@@ -52,7 +52,7 @@ func (l *QueueController) Lens(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *QueueController) Pop(w http.ResponseWriter, r *http.Request) {
-	var jsonInByte, err = json.Marshal(redisDo.Pop())
+	var jsonInByte, err = json.Marshal(l.RedisDo.Pop())
 	if err != nil {
 		panic(err.Error())
 	}

@@ -2,20 +2,22 @@ package main
 
 import (
 	"TheLast/controller"
+	"TheLast/model"
 	. "TheLast/model/backgroundservice"
 	"net/http"
-	"sync"
 )
 
 func main() {
-	var wg sync.WaitGroup
+	var redisConn = model.Register("redis", "queue")
+	// var wg sync.WaitGroup
 	Controller := controller.BaseController{}
+	Controller.RedisDo = redisConn
 	router := new(CustomMux)
 	router.Handle("/static/",
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("asset"))))
 	router.HandleFunc("/", Controller.View)
-	// Stack & Queue(Redis)
+	// Stack & Queue(Redis + Mongo)
 	// ------------------------------------------------
 	router.HandleFunc("/api/keys", Controller.QueueController.Keys)
 	router.HandleFunc("/api/lens", Controller.QueueController.Lens)

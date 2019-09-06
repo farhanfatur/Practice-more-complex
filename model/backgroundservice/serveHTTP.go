@@ -3,6 +3,7 @@ package backgroundservice
 import (
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -24,6 +25,8 @@ func DBService(DbName <-chan string) {
 }
 
 func ModelService(FuncName chan string, Val chan interface{}) {
+	var mtx sync.Mutex
+	mtx.Lock()
 	if <-Val == true {
 		close(Val)
 		Val <- "true"
@@ -31,6 +34,8 @@ func ModelService(FuncName chan string, Val chan interface{}) {
 	for {
 		log.Println("Action", <-FuncName, "is success by parsing", <-Val)
 	}
+
+	mtx.Unlock()
 }
 
 func ConfigService(r *CustomMux) *http.Server {
